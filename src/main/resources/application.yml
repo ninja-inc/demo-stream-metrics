@@ -1,0 +1,18 @@
+spring:
+  rabbitmq:
+    addresses: localhost:5672
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      bindings:
+        test_channel:
+          destination: test_exchange
+          content-type: application/json
+      rabbit:
+        bindings:
+          test_channel:
+            consumer:
+              binding-routing-key: test
+
+management.endpoints.web.exposure.include: metrics
