@@ -1,5 +1,6 @@
 package com.ninja.demostreammetrics
 
+import com.fasterxml.jackson.databind.JsonNode
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.LoggerFactory
@@ -23,28 +24,24 @@ class MetricsTest (
         @Autowired val demoListener: DemoListener
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val webClient: WebTestClient = WebTestClient.bindToServer().build()
 
     @Value("\${local.management.port}")
     private val managePort: Int = 0
 
     @Test
     fun test() {
-        webClient.get()
-                .uri("http://localhost:$managePort/actuator/metrics")
-                .exchange()
-                .expectBody<MetricsResult>()
-                .consumeWith { response -> log.info(response.responseBody.toString()) }
+        demoListener.listenMessage(DemoMessage("hello"))
 
-        val metricsResult: MetricsResult? = WebClient.create()
+        val metricsResult = WebClient.create()
                 .get()
-                .uri("http://localhost:$managePort/actuator/metrics")
+                .uri("http://localhost:$managePort/actuator/metrics/")
                 .retrieve()
-                .bodyToMono(MetricsResult::class.java)
+                .bodyToMono(JsonNode::class.java)
+                //.bodyToMono(MetricsResult::class.java)
                 .block()
 
+        // I can't find spring.integration.send metrics..
         log.info("response: $metricsResult")
-        log.info("demoListener: ${demoListener}")
     }
 }
 

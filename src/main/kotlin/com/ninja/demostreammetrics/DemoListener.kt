@@ -11,10 +11,13 @@ class DemoListener {
 
     @StreamListener("test_channel")
     fun listenMessage(demoMessage: DemoMessage) {
+        log.info("$demoMessage")
+
         if (demoMessage.isDlq) {
+            log.info("not acknowledged")
             throw AmqpRejectAndDontRequeueException("go to DLQ")
         } else {
-            log.info("$demoMessage acknowledged")
+            log.info("acknowledged")
         }
     }
 }
